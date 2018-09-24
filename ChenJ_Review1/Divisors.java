@@ -40,7 +40,6 @@ public class Divisors {
         highestNumFactors = factorCount;
       } else if (factorCount == highestNumFactors) {
         numbers.add(i);
-        highestNumFactors = factorCount;
       }// end if
       factorCount = 0;
     } // end for
