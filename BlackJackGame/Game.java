@@ -72,6 +72,70 @@ public class Game{
     } // end while (!gameOver)
   } // end Game()
 
+  // methods
+
+  // method to deal starting cards to player and dealer
+  private void dealStartingCards() {
+    // everyone gets two cards at the beginning
+    for (int i = 0; i < numPlayers; i++) {
+      Player currentPlayer = players[i];
+
+      currentPlayer.getHand().add(deck.dealCard());
+      currentPlayer.getHand().add(deck.dealCard());
+    } // end for
+
+    dealer.getHand().add(deck.dealCard());
+    dealer.getHand().add(deck.dealCard());
+  } // end dealCards()
+
+  // method to display hand of given participant
+  private void displayHand(Participant p) {
+    System.out.print(p.getName() + "'s hand: ");
+    System.out.print(p.handToString() + "[total: " + p.getHandValue() + "]");
+  } // end displayHand()
+
+  // method to display player's money
+  private void displayMoney(Player p) {
+    System.out.println(p.getName() + ": $" + p.getMoney());
+  }
+
+  // method to display the results of that round
+  private void displayRoundResults() {
+    // display results for this round
+    System.out.println();
+    System.out.println("---------------------------");
+    System.out.println("ROUND " + roundCount + " RESULTS: ");
+    System.out.println();
+
+    // display dealer's end hand
+    System.out.println("Hands: ");
+    displayHand(dealer);
+    System.out.println();
+
+    // display end hands of players and whether or not they won
+    for (int i = 0; i < numPlayers; i++) {
+      displayHand(players[i]);
+      if (players[i].ifBust() == true) {
+        System.out.println(" Bust!");
+        players[i].setMoney(players[i].getMoney() - players[i].getWager());
+      } else if ((dealer.ifBust() == true) || (players[i].getHandValue() > dealer.getHandValue())) {
+        System.out.println(" Winner!");
+        players[i].setMoney(players[i].getMoney() + players[i].getWager());
+      } else if (players[i].getHandValue() == dealer.getHandValue()) {
+        System.out.println(" Tied with dealer!");
+      } else {
+        System.out.println(" Lost!");
+        players[i].setMoney(players[i].getMoney() - players[i].getWager());
+      } // end if
+    } // end
+
+    // display how much money each player has left
+    for (int i = 0; i < numPlayers; i++) {
+      displayMoney(players[i]);
+    } // end for
+    System.out.println("\n");
+  }
+
   // method to display starting hands of dealer and players
   private void displayStartingHands() {
     // display dealer's hands
@@ -87,17 +151,6 @@ public class Game{
 
     System.out.println();
   } // end displayStartingHands()
-
-  // method to display hand of given participant
-  private void displayHand(Participant p) {
-    System.out.print(p.getName() + "'s hand: ");
-    System.out.print(p.handToString() + "[total: " + p.getHandValue() + "]");
-  } // end displayHand()
-
-  // method to display player's money
-  private void displayMoney(Player p) {
-    System.out.println(p.getName() + ": $" + p.getMoney());
-  }
 
   // method to print and shuffle deck
   private void setUpDeck() {
@@ -129,20 +182,6 @@ public class Game{
       players[i] = tempPlayer;
     } // end for
   }
-
-  // method to deal starting cards to player and dealer
-  private void dealStartingCards() {
-    // everyone gets two cards at the beginning
-    for (int i = 0; i < numPlayers; i++) {
-      Player currentPlayer = players[i];
-
-      currentPlayer.getHand().add(deck.dealCard());
-      currentPlayer.getHand().add(deck.dealCard());
-    } // end for
-
-    dealer.getHand().add(deck.dealCard());
-    dealer.getHand().add(deck.dealCard());
-  } // end dealCards()
 
   // method to get user input (each player's wagers)
   private void getPlayerWagers() {
@@ -228,43 +267,7 @@ public class Game{
     } // end while
   } // end playDealer()
 
-  // method to display the results of that round
-  private void displayRoundResults() {
-    // display results for this round
-    System.out.println();
-    System.out.println("---------------------------");
-    System.out.println("ROUND " + roundCount + " RESULTS: ");
-    System.out.println();
-
-    // display dealer's end hand
-    System.out.println("Hands: ");
-    displayHand(dealer);
-    System.out.println();
-
-    // display end hands of players and whether or not they won
-    for (int i = 0; i < numPlayers; i++) {
-      displayHand(players[i]);
-      if (players[i].ifBust() == true) {
-        System.out.println(" Bust!");
-        players[i].setMoney(players[i].getMoney() - players[i].getWager());
-      } else if ((dealer.ifBust() == true) || (players[i].getHandValue() > dealer.getHandValue())) {
-        System.out.println(" Winner!");
-        players[i].setMoney(players[i].getMoney() + players[i].getWager());
-      } else if (players[i].getHandValue() == dealer.getHandValue()) {
-        System.out.println(" Tied with dealer!");
-      } else {
-        System.out.println(" Lost!");
-        players[i].setMoney(players[i].getMoney() - players[i].getWager());
-      } // end if
-    } // end
-
-    // display how much money each player has left
-    for (int i = 0; i < numPlayers; i++) {
-      displayMoney(players[i]);
-    } // end for
-    System.out.println("\n");
-  }
-
+  // method to reset stats from last round
   private void resetGame() {
     deck.reset();
     deck.shuffle();
