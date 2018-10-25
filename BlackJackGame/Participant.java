@@ -21,7 +21,7 @@ public abstract class Participant {
     String temp = "";
     for (int i = 0; i < hand.size(); i++) {
       temp = temp + Deck.cardToString(hand.get(i)) + " ";
-    }
+    } // end for
     return temp;
   } // end handToString()
 
@@ -55,7 +55,7 @@ public abstract class Participant {
   public static int handToValue(ArrayList<Integer> hand) {
     int tempHandValue = 0;
     for (int i = 0; i < hand.size(); i++) {
-      // if card is Ace and hand value will exceed 21, make Ace value 1
+      // if card is Ace and hand value will exceed 21, make Ace's value 1
       if ((hand.get(i) % 13 == 1) && (tempHandValue + 11) > 21) {
         tempHandValue = tempHandValue - 10;
       } // end if
@@ -63,4 +63,5 @@ public abstract class Participant {
     } // end for
     return tempHandValue;
   } // end getHandValue
+
 } // end Player

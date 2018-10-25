@@ -19,9 +19,9 @@ public class Deck {
   // returns String value of individual card
   public static String cardToString(int numInList){
     char[] suits = {(char)'\u2660', (char)'\u2665', (char)'\u2666', (char)'\u2663'};
+    String cardIs = "";
     int cardType = numInList % 13;
     char cardNum;
-    String cardIs = "";
 
     //If card is A, K, J, or Q, sets it as such, otherwise card is equal to number%13
     if (cardType == 0) {
@@ -34,39 +34,35 @@ public class Deck {
       cardNum = 'Q';
     } else {
       cardNum = (char)(cardType+'0');
-    }
+    } // end if
 
     if (cardType != 10) {
       cardIs = "" + cardNum + suits[(int)(numInList/13)];
     } else {
       cardIs = "10" + suits[(int)(numInList/13)];
-    }
+    } // end if
 
     return cardIs;
-  }
+  } // end cardToString(int)
 
   // returns value of card
   public static int cardToValue(int numOfList) {
     int cardValue;
+
     //If card is K,J,Q, returns value of 10
     if (numOfList % 13 == 0 || (numOfList % 13 >= 10 && numOfList % 13 <= 12)) {
       cardValue = 10;
     }
     //If ace, return value of 11 or 1 depending on the value of the hand
     else if (numOfList % 13 == 1) {
-      // if (handVal + 11 <= 21) {
-      //   cardValue = 11;
-      // } else {
-      //   cardValue = 1;
-      // }
       cardValue = 11;
     }
     //All other cards values are their number%13
     else {
       cardValue = numOfList % 13;
-    }
+    } // end if
     return cardValue;
-  } // end cardToValue
+  } // end cardToValue(int)
 
   // shuffles the deck by randomly switching cards
   public void shuffle() {
@@ -86,7 +82,7 @@ public class Deck {
       temp = temp + (this.cardToString(cards[i])) + " ";
     } // end for
     return temp;
-  }
+  } // end toString()
 
   // resets the cardsLeft count
   public void reset() {
@@ -97,5 +93,5 @@ public class Deck {
   public int dealCard() {
     return cards[--cardsLeft]; // returns last card in deck
   } // end dealCard()
-  
+
 } // end Deck

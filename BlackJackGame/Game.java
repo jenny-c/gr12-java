@@ -1,12 +1,14 @@
 import java.util.*;
 
 public class Game{
-  // variables
+  // static variables
+  private static int maxPlayers = 6;
+
+  // instance variables
   private Dealer dealer;
   private Deck deck;
-  private Player[] players;
+  private ArrayList<Player> players;
   private Scanner scan = new Scanner(System.in);
-  private int numPlayers;
   private int roundCount;
   private boolean gameOver;
 
@@ -16,6 +18,7 @@ public class Game{
     gameOver = false;
     roundCount = 1;
     deck = new Deck();
+    players = new ArrayList<>();
 
     // create, print, and shuffle deck
     setUpDeck();
@@ -50,11 +53,17 @@ public class Game{
       // find winners (whoever is above dealer and not bust), or whoever is above dealer
       displayRoundResults();
 
+      // exit if table is empty
+      if (players.size() == 0) {
+        System.out.println("Everyone is out of money. Thanks for playing!");
+        gameOver = true;
+        break;
+      } // end if
+
       // ask player if play another round
       System.out.print("Do you want to play another round? [Y/N] ");
       boolean validAnswer = false;
       while (!validAnswer) {
-        scan.nextLine();
         String answer = (scan.nextLine()).toLowerCase();
         if (answer.equals("y") || answer.equals("yes")) {
           roundCount++;
@@ -77,8 +86,8 @@ public class Game{
   // method to deal starting cards to player and dealer
   private void dealStartingCards() {
     // everyone gets two cards at the beginning
-    for (int i = 0; i < numPlayers; i++) {
-      Player currentPlayer = players[i];
+    for (int i = 0; i < players.size(); i++) {
+      Player currentPlayer = players.get(i);
 
       currentPlayer.getHand().add(deck.dealCard());
       currentPlayer.getHand().add(deck.dealCard());
@@ -113,28 +122,36 @@ public class Game{
     System.out.println();
 
     // display end hands of players and whether or not they won
-    for (int i = 0; i < numPlayers; i++) {
-      displayHand(players[i]);
-      if (players[i].ifBust() == true) {
+    for (int i = 0; i < players.size(); i++) {
+      displayHand(players.get(i));
+      if (players.get(i).ifBust() == true) {
         System.out.println(" Bust!");
-        players[i].setMoney(players[i].getMoney() - players[i].getWager());
-      } else if ((dealer.ifBust() == true) || (players[i].getHandValue() > dealer.getHandValue())) {
+        players.get(i).setMoney(players.get(i).getMoney() - players.get(i).getWager());
+      } else if ((dealer.ifBust() == true) || (players.get(i).getHandValue() > dealer.getHandValue())) {
         System.out.println(" Winner!");
-        players[i].setMoney(players[i].getMoney() + players[i].getWager());
-      } else if (players[i].getHandValue() == dealer.getHandValue()) {
+        players.get(i).setMoney(players.get(i).getMoney() + players.get(i).getWager());
+      } else if (players.get(i).getHandValue() == dealer.getHandValue()) {
         System.out.println(" Tied with dealer!");
       } else {
         System.out.println(" Lost!");
-        players[i].setMoney(players[i].getMoney() - players[i].getWager());
+        players.get(i).setMoney(players.get(i).getMoney() - players.get(i).getWager());
       } // end if
     } // end
+    System.out.println();
 
     // display how much money each player has left
-    for (int i = 0; i < numPlayers; i++) {
-      displayMoney(players[i]);
+    for (int i = 0; i < players.size(); i++) {
+      displayMoney(players.get(i));
+      // remove player if they no longer have money
+      if (players.get(i).getMoney() == 0) {
+        System.out.println(players.get(i).getName() + " is out of money and is out of the game!");
+        players.remove(i);
+        --i;
+      } // end if
     } // end for
+
     System.out.println("\n");
-  }
+  } // end displayRoundResults()
 
   // method to display starting hands of dealer and players
   private void displayStartingHands() {
@@ -143,9 +160,9 @@ public class Game{
     System.out.print("Dealer's hand: ");
     System.out.println(dealer.startHandToString());
 
-    for (int i = 0; i < numPlayers; i++) {
+    for (int i = 0; i < players.size(); i++) {
       // display each person's hands
-      displayHand(players[i]);
+      displayHand(players.get(i));
       System.out.println();
     } // end for
 
@@ -163,68 +180,115 @@ public class Game{
 
   // method to get user input and initialize players accordingly
   private void initializePlayers() {
-    System.out.print("How many players are there? ");
-    numPlayers = scan.nextInt();
-    scan.nextLine();
-    players = new Player[numPlayers];
+    String temp;
+    String name;
+    int numPlayers = 0;
+    double money = 0;
+    boolean validAnswer = false;
+
+    // get valid user input for number of players
+    System.out.print("How many players are there? [MAX: 6] ");
+    while (!validAnswer) {
+      temp = scan.nextLine();
+      try {
+        numPlayers = Integer.parseInt(temp);
+        if (numPlayers > 6) {
+          throw new IllegalArgumentException("Sorry, that's too many players. Pick a number smaller than or equal to 6: ");
+        } // end if
+      } catch (NumberFormatException e) {
+        System.out.print("Please enter a valid number of players: ");
+        continue;
+      } catch (IllegalArgumentException e) {
+        System.out.print(e.getMessage());
+        continue;
+      } // end try
+      validAnswer = true;
+    } // end while
+
     System.out.println();
 
     for (int i = 0; i < numPlayers; i++) {
       System.out.println("For player " + (i+1) + ": ");
       System.out.print("  What is their name? ");
-      String name = scan.nextLine();
+      name = scan.nextLine();
 
+      validAnswer = false;
       System.out.print("  How much money do they have? ");
-      double money = scan.nextDouble();
-      scan.nextLine();
+      while (!validAnswer) {
+        temp = scan.nextLine();
+        try {
+          money = Double.parseDouble(temp);
+          if (money <= 0) {
+            throw new IllegalArgumentException("  Money cannot be 0 or lower: ");
+          } // end if
+        } catch (NumberFormatException e) {
+          System.out.print("  Please enter a valid amount of money: ");
+          continue;
+        } catch (IllegalArgumentException e) {
+          System.out.print(e.getMessage());
+        } // end try
+        validAnswer = true;
+      } // end while
 
       Player tempPlayer = new Player(name, money);
-      players[i] = tempPlayer;
+      players.add(tempPlayer);
     } // end for
-  }
+  } // end initializePlayers()
 
   // method to get user input (each player's wagers)
   private void getPlayerWagers() {
-    for (int i = 0; i < numPlayers; i++) {
+    for (int i = 0; i < players.size(); i++) {
+      String temp;
+      double wager = 0;
       boolean validWager = false;
-      System.out.print(players[i].getName() + "'s wager: ");
-      double wager = scan.nextDouble();
 
-      // error message -> find more errors and fill in
+      // get valid user input
+      System.out.print(players.get(i).getName() + "'s wager [$" + players.get(i).getMoney() + "]: ");
       while (!validWager) {
-        if (wager <= players[i].getMoney()) {
-          players[i].setWager(wager);
-          validWager = true;
-        } else {
-          System.out.print("Please enter a valid wager: ");
-          wager = scan.nextDouble();
-        }
-      }
-      scan.nextLine();
-    } // end for()
-  }
+        temp = scan.nextLine();
+        try {
+          wager = Double.parseDouble(temp);
+          if (wager <= 0) {
+            throw new IllegalArgumentException("Wager cannot be 0 or less than 0. Please enter a valid amount [$" + players.get(i).getMoney() + "]: ");
+          } else if (wager > players.get(i).getMoney()) {
+            throw new IllegalArgumentException("You don't have enough money for that [$" + players.get(i).getMoney() + "]: ");
+          } // if
+        } catch (NumberFormatException e) {
+          System.out.print("Please enter a valid amount to wager [$" + players.get(i).getMoney() + "]: ");
+          continue;
+        } catch (IllegalArgumentException e) {
+          System.out.print(e.getMessage());
+          continue;
+        } // end try
+        validWager = true;
+      } // end while
+      players.get(i).setWager(wager);
+    } // end for
+  } // end getPlayerWagers()
 
   // method to iterate through player and let them play their turn
   private void playPlayers() {
-    for (int i = 0; i < numPlayers; i++) {
+    for (int i = 0; i < players.size(); i++) {
       // display each person's hands
-      displayHand(players[i]);
+      displayHand(players.get(i));
       System.out.println();
 
       // get and process player's choice
+      String temp = "";
       int choice = 0;
-      if (players[i].getHandValue() < 21) {
+      if (players.get(i).getHandValue() < 21) {
         while (choice != 2) {
           System.out.print("Hit or stand? [1 or 2] ");
-          choice = scan.nextInt();
+          temp = scan.nextLine();
+          choice = Integer.parseInt(temp);
           if (choice == 1) {
-            players[i].getHand().add(deck.dealCard());
-            displayHand(players[i]);
+            players.get(i).getHand().add(deck.dealCard());
+            displayHand(players.get(i));
             System.out.println();
-            if (players[i].getHandValue() >= 21) {
-              if (players[i].getHandValue() > 21) {
+            if (players.get(i).getHandValue() >= 21) {
+              if (players.get(i).getHandValue() > 21) {
                 System.out.println("Bust!");
-                players[i].setBust(true);
+                players.get(i).setBust(true);
               } // end if
               break;
             }
@@ -233,7 +297,7 @@ public class Game{
           } // end if
         } // end while
       } else { // player starts with 21, a blackjack
-        System.out.println(players[i].getName() + " has Blackjack!");
+        System.out.println(players.get(i).getName() + " has Blackjack!");
       } // end if
 
       System.out.println();
@@ -242,24 +306,49 @@ public class Game{
 
   // method for the dealer to play their turn
   private void playDealer() {
+    boolean allPlayerBust = true;
+    // boolean losing = true;
     boolean turnOver = false;
+
+    // handle blackjack case
     if (dealer.getHandValue() == 21) {
       System.out.println("Dealer has Blackjack!");
       return;
     } // end if
 
+    // check if all players bust: dealer won't hit if they are
+    for (int i = 0; i < players.size(); i++) {
+      if (!players.get(i).ifBust()) {
+        allPlayerBust = false;
+        // losing = false;
+        break;
+      } // end if
+    } // end for
+    if (allPlayerBust) {
+      System.out.println("All players have busted.");
+      return;
+    } // end if
+
+    // play dealer's turn
     while (!turnOver) {
       displayHand(dealer);
+      // if (losing && !allPlayerBust) {
+      //   for (int i = 0; i < players.size(); i++) {
+      //     if (dealer.getHandValue() >= players.get(i).getHandValue() && !players.get(i).ifBust()) {
+      //       losing = false;
+      //       break;
+      //     } // end if
+      //   } // end for
+      // } // end if
       if (dealer.ifDealerHit()) {
         System.out.println(" Dealer hit!");
         dealer.getHand().add(deck.dealCard());
         if (dealer.getHandValue() > 21) {
           displayHand(dealer);
-          System.out.print(" Dealer bust!");
+          System.out.println(" Dealer bust!");
           dealer.setBust(true);
           turnOver = true;
         } // end if
-        System.out.println();
       } else {
         System.out.println(" Dealer stands");
         turnOver = true;
@@ -269,13 +358,15 @@ public class Game{
 
   // method to reset stats from last round
   private void resetGame() {
-    deck.reset();
     deck.shuffle();
+    deck.reset();
+    System.out.println(deck);
     dealer.getHand().clear();
     dealer.setBust(false);
-    for (int i = 0; i < numPlayers; i++) {
-      players[i].getHand().clear();
-      players[i].setBust(false);
+    for (int i = 0; i < players.size(); i++) {
+      players.get(i).getHand().clear();
+      players.get(i).setBust(false);
     } // end if
   } // end resetCards()
+
 } // end Game

@@ -3,7 +3,7 @@ import java.util.*;
 public class Dealer extends Participant {
   // constructorsi
   public Dealer() {
-    this.name = dealerName;
+    this.name = "dealer";
   } // end Dealer()
 
   // methods

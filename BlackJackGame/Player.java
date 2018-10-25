@@ -18,7 +18,7 @@ public class Player extends Participant {
   // returns String value of Player
   public String toString() {
     return ("My name is " + this.name + ". I have $" + String.format("%.2f", this.money));
-  } // end toString(Player)
+  } // end toString()
 
   // sets player's value of money
   public void setMoney(double m) {
@@ -30,7 +30,7 @@ public class Player extends Participant {
     return money;
   } // end getMoney()
 
-  // sets player's wager 
+  // sets player's wager
   public void setWager(Double w) {
     wager = w;
   } // end setWager(double)
