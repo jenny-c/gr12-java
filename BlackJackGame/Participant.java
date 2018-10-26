@@ -16,6 +16,8 @@ public abstract class Participant {
 
   // methods
 
+  public abstract String toString();
+
   // returns String value of participant's hand
   public String handToString() {
     String temp = "";
@@ -47,7 +49,7 @@ public abstract class Participant {
 
   // returns total hand value of participant
   public int getHandValue() {
-    handValue = handToValue(this.getHand());
+    handValue = handToValue(hand);
     return handValue;
   } // end getHandValue()
 

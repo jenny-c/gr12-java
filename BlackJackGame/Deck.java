@@ -78,11 +78,15 @@ public class Deck {
   // returns String value of the deck
   public String toString() {
     String temp = "";
-    for (int i = 0; i < numCards; i++) {
+    for (int i = 0; i < cardsLeft; i++) {
       temp = temp + (this.cardToString(cards[i])) + " ";
     } // end for
     return temp;
   } // end toString()
+
+  public int getNumCardsLeft() {
+    return cardsLeft;
+  } // end getNumCardsLeft()
 
   // resets the cardsLeft count
   public void reset() {
