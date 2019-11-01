@@ -6,6 +6,7 @@ public abstract class Participant {
   protected String name;
   protected int handValue;
   private boolean bust;
+  private boolean hasBlackjack;
 
   // constructors
   public Participant() {
@@ -46,6 +47,16 @@ public abstract class Participant {
   public boolean ifBust() {
     return bust;
   } // end ifLost()
+
+  // sets whether or not participant has blackjack
+  public void setHasBlackjack(boolean hasBlackjack) {
+    this.hasBlackjack = hasBlackjack;
+  } // end setBlackjack()
+
+  // returns whether or not participant has blackjack
+  public boolean ifHasBlackjack() {
+    return hasBlackjack;
+  } // end ifHasBlackjack()
 
   // returns total hand value of participant
   public int getHandValue() {

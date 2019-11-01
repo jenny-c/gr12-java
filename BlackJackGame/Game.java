@@ -38,20 +38,25 @@ public class Game {
       System.out.println("\n" + line);
       System.out.println("ROUND " + roundCount + ":\n");
 
-      // deal starting cards to players and dealer
-      dealStartingCards();
-
       // get wagers for each player
       getPlayerWagers();
+
+      // deal starting cards to players and dealer
+      dealStartingCards();
 
       // display hands
       displayStartingHands();
 
-      // go through each player and process their choice
-      playPlayers();
+      // check starting hands for blackjack
+      checkForBlackjack();
 
-      // dealer plays
-      playDealer();
+      // if dealer has blackjack, all players without blackjacks auto lose; don't need to play
+      if (!dealer.ifHasBlackjack()) {
+        // go through each player and process their choice
+        playPlayers();
+        // dealer plays
+        playDealer();
+      } // end if
 
       // find winners (whoever is above dealer and not bust), or whoever is above dealer
       displayRoundResults();
@@ -86,6 +91,21 @@ public class Game {
 
   // methods
 
+  // method to check for blackjacks in starting hands
+  private void checkForBlackjack() {
+    dealer.setHasBlackjack(dealer.getHandValue() == 21);
+    if (dealer.ifHasBlackjack()) {
+      System.out.println(dealer.getName() + " has Blackjack!");
+    } // end if
+    for (int i = 0; i < players.size(); i++) {
+      players.get(i).setHasBlackjack(players.get(i).getHandValue() == 21);
+      if (dealer.ifHasBlackjack() && players.get(i).ifHasBlackjack()) {
+        System.out.println(players.get(i).getName() + " has Blackjack!");
+      } // end if
+    } // end for()
+    System.out.println();
+  } // end checkForBlackjack()
+
   // method to deal starting cards to player and dealer
   private void dealStartingCards() {
     // everyone gets two cards at the beginning
@@ -105,7 +125,7 @@ public class Game {
 
   // method to display player's money
   private void displayMoney(Player p) {
-    System.out.println(p.getName() + ": $" + p.getMoney());
+    System.out.println(p.getName() + ": $" + String.format("%.2f", p.getMoney()));
   } // end displayMoney()
 
   // method to display the results of that round
@@ -152,7 +172,7 @@ public class Game {
 
   // method to display starting hands of dealer and players
   private void displayStartingHands() {
-    // display dealer's hands with a hidden card 
+    // display dealer's hands with a hidden card
     System.out.println();
     System.out.print("Dealer's hand: ");
     System.out.println(dealer.handToString(true));
@@ -379,9 +399,11 @@ public class Game {
     // reset hands
     dealer.getHand().clear();
     dealer.setBust(false);
+    dealer.setHasBlackjack(false);
     for (int i = 0; i < players.size(); i++) {
       players.get(i).getHand().clear();
       players.get(i).setBust(false);
+      players.get(i).setHasBlackjack(false);
     } // end if
   } // end resetCards()
 

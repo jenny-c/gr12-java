@@ -16,34 +16,37 @@ public class Deck {
 
   // methods
 
-  // returns String value of individual card
-  public static String cardToString(int numInList){
-    char[] suits = {(char)'\u2660', (char)'\u2665', (char)'\u2666', (char)'\u2663'};
-    String cardIs = "";
-    int cardType = numInList % 13;
-    char cardNum;
-
-    //If card is A, K, J, or Q, sets it as such, otherwise card is equal to number%13
-    if (cardType == 0) {
-      cardNum = 'K';
-    } else if (cardType == 1) {
-      cardNum = 'A';
-    } else if (cardType == 11) {
-      cardNum = 'J';
-    } else if (cardType == 12) {
-      cardNum = 'Q';
-    } else {
-      cardNum = (char)(cardType+'0');
-    } // end if
-
-    if (cardType != 10) {
-      cardIs = "" + cardNum + suits[(int)(numInList/13)];
-    } else {
-      cardIs = "10" + suits[(int)(numInList/13)];
-    } // end if
-
-    return cardIs;
-  } // end cardToString(int)
+  //Method to get String value of individual card
+  	public static String cardToString(int numInList){
+  		int cardType = numInList%13;
+  		char cardNum;
+  		String cardIs = "";
+  		//If card is A, K, J, or Q, sets it as such, otherwise card is equal to number%13
+  		if (cardType == 0){
+  			cardNum = 'K';
+  		}
+  		else if (cardType==1){
+  			cardNum='A';
+  		}
+  		else if (cardType==11){
+  			cardNum = 'J';
+  		}
+  		else if (cardType==12){
+  			cardNum='Q';
+  		}
+  		else {
+  			cardNum = (char)(cardType+'0');
+  		}
+  		//ASCII value of suit is equal to concatenated value of number/13+3 becuase (char)3 is heart icon, (char)4 is dimond //icon and so on
+  		char cardSuit = (char)(numInList/13 +3);
+  		if (cardType!=10){
+  			cardIs=""+cardNum+cardSuit;
+  		}
+  		else {
+  			cardIs="10"+cardSuit;
+  		}
+  		return cardIs;
+  	}
 
   // returns value of card
   public static int cardToValue(int numOfList) {

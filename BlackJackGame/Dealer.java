@@ -17,6 +17,10 @@ public class Dealer extends Participant {
     return ("I am the dealer.");
   } // end toString(Player)
 
+  public String getName() {
+    return "Dealer";
+  } // end getName()
+
   // returns String value of dealer's hand (with ?)
   public String handToString(boolean startingHand) {
     if (startingHand) {
